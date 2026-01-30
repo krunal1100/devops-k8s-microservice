@@ -17,13 +17,38 @@ spec:
         image: user-service:latest
         imagePullPolicy: Never
         env:
-        - name: DB_HOST
-          value: mysql
         - name: DB_USER
-          value: appuser
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_USER
         - name: DB_PASS
-          value: apppass
-        - name: DB_NAME
-          value: microdb
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_PASSWORD
+        envFrom:
+          - configMapRef:
+              name: user-config
         ports:
         - containerPort: 3000
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"

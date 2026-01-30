@@ -1,10 +1,17 @@
 const express = require("express");
 const app = express();
 
-app.get("/orders", (req, res) => {
-  res.json({ status: "Order Service OK" });
+app.use(express.json());
+
+let orders = [];
+
+app.get("/orders", (req, res) => res.json(orders));
+
+app.post("/orders", (req, res) => {
+  orders.push(req.body);
+  res.json({ status: "Order created" });
 });
 
-app.listen(3000, () => {
-  console.log("Order Service running on port 3000");
-});
+app.get("/health", (req, res) => res.send("OK"));
+
+app.listen(3000, () => console.log("Order Service running"));

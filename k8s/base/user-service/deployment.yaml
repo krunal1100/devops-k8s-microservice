@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: user-service
-        image: user-service:latest
-        imagePullPolicy: Never
+        image: 851515492833.dkr.ecr.ap-south-1.amazonaws.com/user-service:v2
+        imagePullPolicy: Always
         env:
         - name: DB_USER
           valueFrom:

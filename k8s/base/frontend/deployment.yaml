@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: frontend:latest
-        imagePullPolicy: Never
+        image: 851515492833.dkr.ecr.ap-south-1.amazonaws.com/frontend:v1
+        imagePullPolicy: Always
         ports:
         - containerPort: 80

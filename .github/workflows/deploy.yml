@@ -51,13 +51,22 @@ jobs:
             --name ${{ secrets.EKS_CLUSTER_NAME }} \
             --region ${{ env.AWS_REGION }}
 
-      - name: Deploy to Kubernetes
+      - name: Deploy with Helm
         run: |
-          kubectl set image deployment/frontend \
-            frontend=${{ env.ECR_REGISTRY }}/frontend:${{ env.IMAGE_TAG }}
-          
-          kubectl set image deployment/user-service \
-            user-service=${{ env.ECR_REGISTRY }}/user-service:${{ env.IMAGE_TAG }}
-          
-          kubectl set image deployment/order-service \
-            order-service=${{ env.ECR_REGISTRY }}/order-service:${{ env.IMAGE_TAG }}
+          helm upgrade --install microservices ./microservices \
+          --set frontend.image=${{ env.ECR_REGISTRY }}/frontend:${{ env.IMAGE_TAG }} \
+          --set userService.image=${{ env.ECR_REGISTRY }}/user-service:${{ env.IMAGE_TAG }} \
+          --set orderService.image=${{ env.ECR_REGISTRY }}/order-service:${{ env.IMAGE_TAG }} \
+          --atomic \
+          --timeout 5m
+
+#      - name: Deploy to Kubernetes
+#        run: |
+#          kubectl set image deployment/frontend \
+#            frontend=${{ env.ECR_REGISTRY }}/frontend:${{ env.IMAGE_TAG }}
+#          
+#          kubectl set image deployment/user-service \
+#            user-service=${{ env.ECR_REGISTRY }}/user-service:${{ env.IMAGE_TAG }}
+#          
+#          kubectl set image deployment/order-service \
+#            order-service=${{ env.ECR_REGISTRY }}/order-service:${{ env.IMAGE_TAG }}

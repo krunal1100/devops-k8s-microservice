@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.userService.name }}
+spec:
+  replicas: {{ .Values.userService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.userService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.userService.name }}
+    spec:
+      containers:
+      - name: {{ .Values.userService.name }}
+        image: "{{ .Values.image.repository }}/user-service:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_USER
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_PASSWORD
+
+        envFrom:
+        - configMapRef:
+            name: user-config
+
+        ports:
+        - containerPort: {{ .Values.userService.port }}
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.userService.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.userService.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 5

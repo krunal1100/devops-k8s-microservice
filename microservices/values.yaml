@@ -1,0 +1,39 @@
+image:
+  repository: 851515492833.dkr.ecr.ap-south-1.amazonaws.com
+  tag: v2
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+
+frontend:
+  name: frontend
+  port: 80
+  replicaCount: 2
+
+userService:
+  name: user-service
+  port: 3000
+  replicaCount: 2
+
+  hpa:
+    minReplicas: 2
+    maxReplicas: 5
+    cpuUtilization: 60
+
+orderService:
+  name: order-service
+  port: 3000
+  replicaCount: 2
+
+mysql:
+  name: mysql
+  image: mysql:8
+  port: 3306
+  database: microdb
+  host: mysql
+  storage: 5Gi
+
+ingress:
+  enabled: true
+  className: alb
